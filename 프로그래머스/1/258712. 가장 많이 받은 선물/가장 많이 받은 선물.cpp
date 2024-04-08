@@ -1,66 +1,52 @@
-#include <bits/stdc++.h>
-#include <string>
+#include <iostream>
 #include <vector>
+#include <unordered_map>
+#include <algorithm>
+#include <climits> // <climits> 헤더 파일 추가
 
 using namespace std;
 
-vector<string> split(string input, char dlim)
-{
-	vector<string> result;
-
-	stringstream ss;
-	string stringBuffer;
-	ss.str(input);
-	
-	while (getline(ss, stringBuffer, dlim))	
-	{
-		result.push_back(stringBuffer);
-	}
-
-	return result;
+int calculateGiftIndex(int given, int received) {
+    return given - received;
 }
 
 int solution(vector<string> friends, vector<string> gifts) {
-    int answer = 0;
-    unordered_map<string, int> friendDic;   //친구들을 번호로 매기기 위한 map
-    vector<int> giftIndex(friends.size());  //친구들이 선물을 주고받은 수(선물지수)
-    vector<vector<int>> giftRecord(friends.size(), vector<int>(friends.size(), 0)); //특정 친구에게 선물을 준 횟수
-    
-    for(int i = 0; i < friends.size(); i++)
-    {
-        friendDic.emplace(friends[i], i);
+    unordered_map<string, int> giftCounts;
+    unordered_map<string, int> givenCounts;
+    unordered_map<string, int> receivedCounts;
+
+    // 각 친구들의 선물 횟수를 계산합니다.
+    for (string gift : gifts) {
+        string giver = gift.substr(0, gift.find_first_of("->"));
+        string receiver = gift.substr(gift.find_first_of(">") + 1);
+
+        givenCounts[giver]++;
+        receivedCounts[receiver]++;
     }
-    //선물을 준 상황을 배열에 입력
-    for(string str : gifts)
-    {
-        vector<string> v = split(str, ' ');
-        giftRecord[friendDic[v[0]]][friendDic[v[1]]]++;
-        giftIndex[friendDic[v[0]]]++;
-        giftIndex[friendDic[v[1]]]--;
+
+    // 각 친구들의 선물 지수를 계산합니다.
+    for (string friendName : friends) {
+        int given = givenCounts[friendName];
+        int received = receivedCounts[friendName];
+        giftCounts[friendName] = calculateGiftIndex(given, received);
     }
-    
-    int cnt;
-    for(int i = 0; i < friends.size(); i++)
-    {
-        cnt = 0;
-        for(int j = 0; j < friends.size(); j++)
-        {
-            if(i == j)  //자기 자신과는 계산X
-                continue;
-            if(giftRecord[i][j] > giftRecord[j][i]) //i 친구가 j 친구보다 선물을 더 많이 줬을 경우
-            {
-                cnt++;
-            }else if(giftRecord[i][j] == giftRecord[j][i])  //i 친구와 j 친구의 선물 준 횟수가 같을 경우
-            {
-                if(giftIndex[i] > giftIndex[j]) //선물 지수가 더 클 경우
-                {
-                    cnt++;
-                }
-            }
-        }
-        answer = max(answer, cnt);  //제일 큰 값 저장
+
+    // 가장 많은 선물을 받을 친구의 선물 지수를 찾습니다.
+    int maxGifts = INT_MIN;
+    for (auto it : giftCounts) {
+        maxGifts = max(maxGifts, it.second);
     }
-    
-    return answer;
+
+    // 선물을 가장 많이 받을 친구의 선물 수를 반환합니다.
+    return maxGifts > 0 ? maxGifts : 0;
 }
 
+int main() {
+    vector<string> friends = {"A", "B", "C"};
+    vector<string> gifts = {"A->B", "B->A", "B->C", "C->A", "C->B", "C->A"};
+
+    int result = solution(friends, gifts);
+    cout << "다음 달에 가장 많은 선물을 받을 친구가 받을 선물의 수: " << result << endl;
+
+    return 0;
+}
