@@ -6,16 +6,14 @@ class Solution {
         public int solution(String[] friends, String[] gifts) {
         int answer = 0;
         int[] count = new int[friends.length];
-        int[][] table = new int[friends.length][friends.length];
+        int[][] gift_table = new int[friends.length][friends.length];
         
         Map<String, Integer> map = new HashMap<>();
-        
-        // 맵 만들기
+     
         for(int i=0; i<friends.length; ++i) {
             map.put(friends[i], i);
         }
-        
-        // 초기화
+     
         for(int i=0; i<friends.length; ++i) {
             for(int j=0; j<friends.length; ++j) {
                 table[i][j] = 0;
@@ -33,13 +31,12 @@ class Solution {
         }
         
         
-        // 1을 이중 포문으로 돌기
+
         for(int i=0; i<friends.length; ++i) {
             for(int j=0; j<friends.length; ++j) {
-                // if(i==j) continue;
                 if(i >= j) continue; // 중복
                 
-                int i_give = table[i][j], j_give = table[j][i];
+                int i_give = gift_table[i][j], j_give = gift_table[j][i];
                 if(i_give > j_give) {
                     count[i] += 1;
                 } else if(i_give < j_give) {
