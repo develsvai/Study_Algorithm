@@ -22,13 +22,13 @@ class Solution {
         }
         
         // 선물 테이블 만들기
-        for(int i=0; i<gifts.length; ++i) {
-            StringTokenizer st = new StringTokenizer(gifts[i]);
-            int giver = map.get(st.nextToken());
-            int taker = map.get(st.nextToken());
-            
-            table[giver][taker] += 1;
-        }
+       for (String gift : gifts) {
+          String[] tokens = gift.split(" ");
+          int giver = map.get(tokens[0]);
+          int taker = map.get(tokens[1]);
+    
+          table[giver][taker] += 1;
+       }
         
         
 
